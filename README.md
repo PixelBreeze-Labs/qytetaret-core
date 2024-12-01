@@ -1,163 +1,134 @@
-# Awesome NestJS Boilerplate v10
+# Qytetaret Core API
 
-[![Awesome NestJS](https://img.shields.io/badge/Awesome-NestJS-blue.svg?longCache=true&style=flat-square)](https://github.com/juliandavidmr/awesome-nestjs)
+> Backend service for Qytetaret, a community reporting platform built with NestJS. This project provides the core API services for both PWA and mobile applications.
 
-> This is an ever-evolving, very opinionated architecture and dev environment for new node projects using [NestJS](https://nestjs.com). Questions, feedback, and for now, even bikeshedding are welcome. 😄
+## Development Setup
 
-## Getting started
+### Prerequisites
+
+- Node.js (v18+)
+- MongoDB
+- Cursor IDE (recommended) or VS Code
+- yarn (recommended) or npm
 
 ```bash
-# 1. Clone the repository or click on "Use this template" button.
-npx degit NarHakobyan/awesome-nest-boilerplate my-nest-app
+# 1. Install dependencies
+yarn
 
-# 2. Enter your newly-cloned folder.
-cd my-nest-app
-
-# 3. Create Environment variables file.
+# 2. Create Environment variables file
 cp .env.example .env
 
-# 3. Install dependencies. (Make sure yarn is installed: https://yarnpkg.com/lang/en/docs/install)
-yarn
-```
-
-## Checklist
-
-When you use this template, try follow the checklist to update your info properly
-
-- [ ] Change the author name in `LICENSE`
-- [ ] Change configurations in `.env`
-- [ ] Remove the `.github` folder which contains the funding info
-- [ ] Clean up the README.md file
-
-And, enjoy :)
-<details>
-  <summary>Node Development</summary>
-
-### Scripts
-
-```bash
-# 4. Run development server and open http://localhost:3000
+# 3. Run development server
 yarn start:dev
 
-# 5. Read the documentation linked below for "Setup and development".
+# 4. API will be available at http://localhost:3000
 ```
 
-### Build
+## IDE Setup
 
-To build the App, run
+### Cursor IDE (Recommended)
+- Project comes with predefined `.cursorrules` for AI-assisted development
+- Follows project's code style and conventions
+- Integrated with project's TypeScript configuration
 
-```bash
-yarn build:prod
-```
-
-And you will see the generated file in `dist` that ready to be served.
-
-</details>
-
-<details>
-  <summary>Deno Development</summary>
-
-We are excited to announce that this project now supports Deno! You can use Deno to run, build, and test your application. 🦕
-
-#### Scripts
-
-Here are the available scripts for Deno:
-
-```bash
-# Start the development server
-deno task start
-
-# Start the server with file watcher
-deno task watch
-
-# Run tests
-deno task test
-
-# Compile the application (not working yet)
-deno task compile
-```
-
-To build the App using Deno, run:
-
-```bash
-deno task buildr
-```
-
-And you will see the generated file in `dist` that is ready to be served.
-
-</details>
-
-<details>
-  <summary>Bun Development</summary>
-
-We are excited to announce that this project now supports Bun! You can use Bun to run, build, and test your application. 🧅
-
-#### Scripts
-
-Here are the available scripts for Bun:
-
-```bash
-# Start the development server
-bun start:dev:bun
-
-# Start the server with file watcher
-bun watch:bun
-
-# Run tests
-
-bun test
-
-# Build the application
-
-bun build:bun
-```
-
-And you will see the generated file in `dist` that is ready to be served.
-
-</details>
-
+### VS Code
+Project includes preconfigured VS Code settings:
+- settings.json: Editor configurations
+- tasks.json: Build tasks (maybe not included in git)
+- launch.json: Debug configurations  (maybe not included in git)
+- extensions.json: Recommended extensions  (maybe not included in git)
 
 ## Features
 
-<dl>
-  <!-- <dt><b>Quick scaffolding</b></dt>
-  <dd>Create modules, services, controller - right from the CLI!</dd> -->
+- **Authentication & Authorization**
+  - JWT-based authentication
+  - Role-based access control
+  
+- **API Features**
+  - User management
+  - Post creation and management
+  - Media upload (AWS S3)
+  - Community reporting
+  
+- **Technical Features**
+  - TypeScript support
+  - MongoDB with Mongoose
+  - OpenAPI documentation (Swagger)
+  - Environment configuration
+  - Error handling
+  - Request validation
+  - Testing setup
 
-  <dt><b>Instant feedback</b></dt>
-  <dd>Enjoy the best DX (Developer eXperience) and code your app at the speed of thought! Your saved changes are reflected instantaneously.</dd>
+## Development
 
-  <dt><b>JWT Authentication</b></dt>
-  <dd>Installed and configured JWT authentication.</dd>
+```bash
+# Development
+yarn start:dev
 
-  <dt><b>Next generation Typescript</b></dt>
-  <dd>Always up to date typescript version.</dd>
+# Build
+yarn build:prod
 
-  <dt><b>Industry-standard routing</b></dt>
-  <dd>It's natural to want to add pages (e.g. /about`) to your application, and routing makes this possible.</dd>
+# Run tests
+yarn test
 
-  <dt><b>Environment Configuration</b></dt>
-  <dd>development, staging and production environment configurations</dd>
+# Run e2e tests
+yarn test:e2e
 
-  <dt><b>Swagger Api Documentation</b></dt>
-  <dd>Already integrated API documentation. To see all available endpoints visit http://localhost:3000/documentation</dd>
+# Lint code
+yarn lint
 
-  <dt><b>Node, Bun, Deno</b></dt>
-  <dd>Support for Node, Bun, and Deno. You can run, build, and test your application using any of these runtime.</dd>
+# Format code
+yarn format
+```
 
-  <dt><b>Linter</b></dt>
-  <dd>eslint + prettier = ❤️</dd>
-</dl>
+## API Documentation
+
+- Development: http://localhost:3000/documentation
+- Swagger UI with all available endpoints
+- Authentication details
+- Request/Response examples
+
+## Project Structure
+
+```
+src/
+  ├── auth/         # Authentication & authorization
+  ├── users/        # User management
+  ├── posts/        # Post management
+  ├── media/        # Media handling
+  ├── common/       # Shared resources
+  └── config/       # Configuration
+```
+
+## Environment Variables
+
+Copy `.env.example` to `.env` and adjust values:
+- `PORT`: API port (default: 3000)
+- `MONGODB_URL`: MongoDB connection string
+- `JWT_SECRET`: Secret for JWT tokens
+- `AWS_*`: AWS credentials for S3
+
+## Testing
+
+```bash
+# Unit tests
+yarn test
+
+# e2e tests
+yarn test:e2e
+
+# Test coverage
+yarn test:cov
+```
 
 ## Documentation
 
-This project includes a `docs` folder with more details on:
+See the `docs` folder for detailed documentation on:
+1. Architecture
+2. API Specifications
+3. Database Schema
+4. Security Implementation
 
-1.  [Setup and development](https://narhakobyan.github.io/awesome-nest-boilerplate/docs/development.html#first-time-setup)
-1.  [Architecture](https://narhakobyan.github.io/awesome-nest-boilerplate/docs/architecture.html)
-1.  [Naming Cheatsheet](https://narhakobyan.github.io/awesome-nest-boilerplate/docs/naming-cheatsheet.html)
+## License
 
-## Community
-
-For help, discussion about best practices, or any other conversation that would benefit from being searchable:
-
-[Discuss Awesome NestJS Boilerplate on GitHub](https://github.com/NarHakobyan/awesome-nest-boilerplate/discussions)
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
