@@ -59,6 +59,7 @@
     "libphonenumber-js": "^1.11.12",
     "lodash": "^4.17.21",
     "mime-types": "^2.1.35",
+    "mongodb": "^6.11.0",
     "morgan": "^1.10.0",
     "nestjs-cls": "^4.4.1",
     "nestjs-i18n": "^10.4.9",

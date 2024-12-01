@@ -9,13 +9,16 @@ import { SnakeNamingStrategy } from './src/snake-naming.strategy';
 dotenv.config();
 
 export const dataSource = new DataSource({
-  type: 'postgres',
+  type: 'mongodb',
   host: process.env.DB_HOST,
   port: Number(process.env.DB_PORT),
   username: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_DATABASE,
-  namingStrategy: new SnakeNamingStrategy(),
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  synchronize: true, // be careful with this in production
+  logging: true,
   subscribers: [UserSubscriber],
   entities: [
     'src/modules/**/*.entity{.ts,.js}',

@@ -3,11 +3,11 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 export function setupSwagger(app: INestApplication): void {
   const documentBuilder = new DocumentBuilder()
-    .setTitle('API')
+    .setTitle('Qytetaret API') // Changed title here
     .setDescription(
-      `### REST
+      `### Community Reporting Platform API
 
-Routes is following REST standard (Richardson level 3)
+Routes follow REST standard (Richardson level 3)
 
 <details><summary>Detailed specification</summary>
 <p>
@@ -34,8 +34,8 @@ Routes is following REST standard (Richardson level 3)
   - \`<METHOD>\` is:
     - **POST** for creation
     - **PATCH** for update (one or more fields)
-    - **PUT** for replacement (all fields, not used)
-    - **DELETE** for suppression (all fields, not used)
+    - **PUT** for replacement (all fields)
+    - **DELETE** for suppression
   - \`<METHOD> /<resources>/<resource_id>\`
     - Create **<resources>** with id **<resource_id>** as admin
     - Output a **400** if **<resource_id>** conflicts with existing **<resources>**

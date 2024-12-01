@@ -81,6 +81,36 @@ export class ApiConfigService {
     };
   }
 
+
+  get mongoConfig(): TypeOrmModuleOptions {
+    const entities = [
+      join(import.meta.dirname + '/modules/**/*.entity{.ts,.js}'),
+      join(import.meta.dirname + '/modules/**/*.view-entity{.ts,.js}'),
+    ];
+    const migrations = [
+      join(import.meta.dirname + '/database/migrations/*{.ts,.js}'),
+    ];
+
+    return {
+      entities,
+      migrations,
+      keepConnectionAlive: !this.isTest,
+      dropSchema: this.isTest,
+      type: 'mongodb',
+      name: 'default',
+      host: this.getString('DB_HOST'),
+      port: this.getNumber('DB_PORT'),
+      username: this.getString('DB_USERNAME'),
+      password: this.getString('DB_PASSWORD'),
+      database: this.getString('DB_DATABASE'),
+      subscribers: [UserSubscriber],
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      logging: this.getBoolean('ENABLE_ORM_LOGS'),
+      synchronize: this.isDevelopment, // be careful with this in production
+    };
+  }
+
   get postgresConfig(): TypeOrmModuleOptions {
     const entities = [
       join(import.meta.dirname + '/modules/**/*.entity{.ts,.js}'),

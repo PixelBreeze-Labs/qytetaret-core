@@ -50,13 +50,12 @@ import { SharedModule } from './shared/shared.module.ts';
     TypeOrmModule.forRootAsync({
       imports: [SharedModule],
       useFactory: (configService: ApiConfigService) =>
-        configService.postgresConfig,
+        configService.mongoConfig,
       inject: [ApiConfigService],
       dataSourceFactory: (options) => {
         if (!options) {
           throw new Error('Invalid options passed');
         }
-
         return Promise.resolve(
           addTransactionalDataSource(new DataSource(options)),
         );
