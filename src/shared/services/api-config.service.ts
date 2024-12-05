@@ -7,7 +7,6 @@ import type { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { default as parse } from 'parse-duration';
 
 import { UserSubscriber } from '../../entity-subscribers/user-subscriber.ts';
-import { SnakeNamingStrategy } from '../../snake-naming.strategy.ts';
 
 @Injectable()
 export class ApiConfigService {
@@ -111,33 +110,7 @@ export class ApiConfigService {
     };
   }
 
-  get postgresConfig(): TypeOrmModuleOptions {
-    const entities = [
-      join(import.meta.dirname + '/modules/**/*.entity{.ts,.js}'),
-      join(import.meta.dirname + '/modules/**/*.view-entity{.ts,.js}'),
-    ];
-    const migrations = [
-      join(import.meta.dirname + '/database/migrations/*{.ts,.js}'),
-    ];
 
-    return {
-      entities,
-      migrations,
-      keepConnectionAlive: !this.isTest,
-      dropSchema: this.isTest,
-      type: 'postgres',
-      name: 'default',
-      host: this.getString('DB_HOST'),
-      port: this.getNumber('DB_PORT'),
-      username: this.getString('DB_USERNAME'),
-      password: this.getString('DB_PASSWORD'),
-      database: this.getString('DB_DATABASE'),
-      subscribers: [UserSubscriber],
-      migrationsRun: true,
-      logging: this.getBoolean('ENABLE_ORM_LOGS'),
-      namingStrategy: new SnakeNamingStrategy(),
-    };
-  }
 
   get awsS3Config() {
     return {
