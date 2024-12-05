@@ -50,19 +50,24 @@ import { ReportModule } from './modules/report/report.module.ts';
       envFilePath: '.env',
     }),
     TypeOrmModule.forRootAsync({
-      imports: [SharedModule],
-      useFactory: (configService: ApiConfigService) =>
-        configService.mongoConfig,
-      inject: [ApiConfigService],
-      dataSourceFactory: (options) => {
-        if (!options) {
-          throw new Error('Invalid options passed');
-        }
-        return Promise.resolve(
-          addTransactionalDataSource(new DataSource(options)),
-        );
-      },
-    }),
+        imports: [SharedModule],
+        useFactory: (configService: ApiConfigService) => ({
+          ...configService.mongoConfig,
+          name: 'qytetaret-core', // Make sure this matches your config
+        }),
+        inject: [ApiConfigService],
+        dataSourceFactory: (options) => {
+          if (!options) {
+            throw new Error('Invalid options passed');
+          }
+          return Promise.resolve(
+            addTransactionalDataSource(new DataSource({
+              ...options,
+              name: 'qytetaret-core' // Add this to ensure consistency
+            })),
+          );
+        },
+      }),
     I18nModule.forRootAsync({
       useFactory: (configService: ApiConfigService) => ({
         fallbackLanguage: configService.fallbackLanguage,
