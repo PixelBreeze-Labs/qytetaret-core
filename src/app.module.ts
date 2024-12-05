@@ -53,7 +53,7 @@ import { ReportModule } from './modules/report/report.module.ts';
         imports: [SharedModule],
         useFactory: (configService: ApiConfigService) => ({
           ...configService.mongoConfig,
-          name: 'qytetaret-core', // Make sure this matches your config
+          name: 'qytetaret', // Make sure this matches your config
         }),
         inject: [ApiConfigService],
         dataSourceFactory: (options) => {
@@ -63,7 +63,7 @@ import { ReportModule } from './modules/report/report.module.ts';
           return Promise.resolve(
             addTransactionalDataSource(new DataSource({
               ...options,
-              name: 'qytetaret-core' // Add this to ensure consistency
+              name: 'qytetaret' // Add this to ensure consistency
             })),
           );
         },
