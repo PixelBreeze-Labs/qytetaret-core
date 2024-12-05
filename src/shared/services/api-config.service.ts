@@ -97,7 +97,7 @@ export class ApiConfigService {
       keepConnectionAlive: !this.isTest,
       dropSchema: this.isTest,
       type: 'mongodb',
-      name: 'qytetaret-core',
+      name: 'qytetaret',
       host: this.getString('DB_HOST'),
       port: this.getNumber('DB_PORT'),
       username: this.getString('DB_USERNAME'),
