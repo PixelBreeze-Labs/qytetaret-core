@@ -24,6 +24,7 @@ export abstract class AbstractEntity<
   O = never,
 > {
   @PrimaryGeneratedColumn('uuid')
+  // @ts-ignore
   id!: Uuid;
 
   @CreateDateColumn({

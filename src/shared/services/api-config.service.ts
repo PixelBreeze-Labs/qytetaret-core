@@ -1,12 +1,9 @@
-import { join } from 'node:path';
-
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import type { ThrottlerOptions } from '@nestjs/throttler';
 import type { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { default as parse } from 'parse-duration';
 
-import { UserSubscriber } from '../../entity-subscribers/user-subscriber.ts';
 import { UserEntity } from '../../modules/user/user.entity';
 import { Report } from '../../modules/report/entities/report.entity.ts';
 
@@ -89,35 +86,16 @@ export class ApiConfigService {
 
 
   get mongoConfig(): TypeOrmModuleOptions {
-    const entities = [
-     UserEntity,
-     Report
-    ];
-    const migrations = [
-      join(import.meta.dirname + '/database/migrations/*{.ts,.js}'),
-    ];
-
     return {
-      entities,
-      migrations,
-      keepConnectionAlive: !this.isTest,
-      dropSchema: this.isTest,
       type: 'mongodb',
+      entities: [UserEntity, Report],
       url: this.configService.get<string>('DATABASE_URL'),
-      database: this.getString('DB_DATABASE'),
       name: 'qytetaret',
-    //   host: this.getString('DB_HOST'),
-    //   port: this.getNumber('DB_PORT'),
-    //   username: this.getString('DB_USERNAME'),
-    //   password: this.getString('DB_PASSWORD'),
-    //   database: this.getString('DB_DATABASE'),
-      subscribers: [UserSubscriber],
       useNewUrlParser: true,
       useUnifiedTopology: true,
-      logging: this.getBoolean('ENABLE_ORM_LOGS'),
-      synchronize: this.isDevelopment, // be careful with this in production
+      synchronize: this.isDevelopment
     };
-  }
+}
 
 
 

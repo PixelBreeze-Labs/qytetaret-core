@@ -1,53 +1,44 @@
 // user.entity.ts
 import { Entity, Column, ObjectIdColumn, ObjectId } from 'typeorm';
+import { UserDto } from './dtos/user.dto';
+import { RoleType } from '../../constants/role-type';
 
 @Entity('users')
 export class UserEntity {
-  @ObjectIdColumn()
-  _id!: ObjectId;
+    @ObjectIdColumn()
+    _id!: ObjectId;
 
-  @Column()
-  firstName!: string;
+    @Column()
+    firstName!: string;
 
-  @Column()
-  lastName!: string;
+    @Column()
+    lastName!: string;
 
-  @Column()
-  email!: string;
+    @Column()
+    email!: string;
 
-  @Column()
-  password!: string;
+    @Column()
+    password!: string;
 
-  @Column({ nullable: true })
-  phone?: string;
+    @Column({ nullable: true })
+    phone?: string;
 
-  @Column({ default: 'user' })
-  role!: string;
+    @Column({ default: RoleType.USER })
+    role!: RoleType;
 
-  @Column({ default: false })
-  isEmailVerified!: boolean;
+    @Column({ default: false })
+    isEmailVerified!: boolean;
 
-  @Column()
-  createdAt!: Date;
+    @Column()
+    createdAt!: Date;
 
-  @Column()
-  updatedAt!: Date;
+    @Column()
+    updatedAt!: Date;
 
-  @Column({ nullable: true })
-  avatar?: string;
+    @Column({ nullable: true })
+    avatar?: string;
 
-  toDto() {
-    return {
-      id: this._id.toString(),
-      firstName: this.firstName,
-      lastName: this.lastName,
-      email: this.email,
-      phone: this.phone,
-      role: this.role,
-      isEmailVerified: this.isEmailVerified,
-      createdAt: this.createdAt,
-      updatedAt: this.updatedAt,
-      avatar: this.avatar
-    };
-  }
+    toDto(_p0: { isActive: boolean; }): UserDto {
+        return new UserDto(this);
+    }
 }

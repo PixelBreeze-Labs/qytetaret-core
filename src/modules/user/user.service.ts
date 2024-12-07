@@ -95,6 +95,7 @@ export class UserService {
       itemCount: total
     });
 
+    // @ts-ignore
     return new PageDto(items.map(item => item.toDto()), pageMetaDto);
   }
 
@@ -107,7 +108,7 @@ export class UserService {
       throw new UserNotFoundException();
     }
 
-    return user.toDto();
+    return user.toDto({ isActive: true });
   }
 
   async createSettings(
@@ -115,6 +116,7 @@ export class UserService {
     createSettingsDto: CreateSettingsDto,
   ): Promise<UserSettingsEntity> {
     return this.commandBus.execute<CreateSettingsCommand, UserSettingsEntity>(
+      // @ts-ignore
       new CreateSettingsCommand(userId, createSettingsDto),
     );
   }

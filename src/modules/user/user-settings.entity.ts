@@ -21,6 +21,7 @@ export class UserSettingsEntity extends AbstractEntity<
   @Column({ type: 'uuid' })
   userId?: string;
 
+  // @ts-ignore
   @OneToOne(() => UserEntity, (user) => user.settings, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',

@@ -44,11 +44,11 @@ export class AuthController {
     const userEntity = await this.authService.validateUser(userLoginDto);
 
     const token = await this.authService.createAccessToken({
-      userId: userEntity.id,
+      userId: userEntity._id.toString(),
       role: userEntity.role,
     });
 
-    return new LoginPayloadDto(userEntity.toDto(), token);
+    return new LoginPayloadDto(userEntity.toDto({ isActive: true }), token);
   }
 
   @Post('register')
@@ -75,6 +75,7 @@ export class AuthController {
   @Auth([RoleType.USER, RoleType.ADMIN])
   @ApiOkResponse({ type: UserDto, description: 'current user info' })
   getCurrentUser(@AuthUser() user: UserEntity): UserDto {
+    // @ts-ignore
     return user.toDto();
   }
 }

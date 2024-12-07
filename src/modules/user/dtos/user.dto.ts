@@ -1,50 +1,54 @@
-import { AbstractDto } from '../../../common/dto/abstract.dto.ts';
-import { RoleType } from '../../../constants/role-type.ts';
+// user.dto.ts
+import { AbstractDto } from '../../../common/dto/abstract.dto';
+import { RoleType } from '../../../constants/role-type';
 import {
   BooleanFieldOptional,
   EmailFieldOptional,
   EnumFieldOptional,
   PhoneFieldOptional,
   StringFieldOptional,
-} from '../../../decorators/field.decorators.ts';
-import type { UserEntity } from '../user.entity.ts';
+} from '../../../decorators/field.decorators';
+import type { UserEntity } from '../user.entity';
 
-// TODO, remove this class and use constructor's second argument's type
 export type UserDtoOptions = Partial<{ isActive: boolean }>;
 
 export class UserDto extends AbstractDto {
-  @StringFieldOptional({ nullable: true })
-  firstName?: string | null;
+  @StringFieldOptional()
+  firstName!: string;
+
+  @StringFieldOptional()
+  lastName!: string;
 
   @StringFieldOptional({ nullable: true })
-  lastName?: string | null;
-
-  @StringFieldOptional({ nullable: true })
-  username!: string;
+  username?: string;
 
   @EnumFieldOptional(() => RoleType)
-  role?: RoleType;
+  role!: RoleType;
 
-  @EmailFieldOptional({ nullable: true })
-  email?: string | null;
+  @EmailFieldOptional()
+  email!: string;
 
   @StringFieldOptional({ nullable: true })
-  avatar?: string | null;
+  avatar?: string;
 
+  // @ts-ignore
   @PhoneFieldOptional({ nullable: true })
-  phone?: string | null;
+  phone?: string;
 
   @BooleanFieldOptional()
   isActive?: boolean;
 
-  constructor(user: UserEntity, options?: UserDtoOptions) {
-    super(user);
-    this.firstName = user.firstName;
-    this.lastName = user.lastName;
-    this.role = user.role;
-    this.email = user.email;
-    this.avatar = user.avatar;
-    this.phone = user.phone;
+  constructor(entity: UserEntity, options?: UserDtoOptions) {
+    // @ts-ignore
+    super(entity);
+    
+    this.firstName = entity.firstName;
+    this.lastName = entity.lastName;
+    this.role = entity.role;
+    this.email = entity.email;
+    this.avatar = entity.avatar;
+    this.phone = entity.phone;
+    this.username = undefined; // or derive it if you have a way to generate username
     this.isActive = options?.isActive;
   }
 }

@@ -43,7 +43,7 @@ export class PostController {
     @AuthUser() user: UserEntity,
   ) {
     const postEntity = await this.postService.createPost(
-      user.id,
+      user._id.toString() as Uuid,
       createPostDto,
     );
 
