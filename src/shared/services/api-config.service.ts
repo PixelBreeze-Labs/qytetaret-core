@@ -90,7 +90,7 @@ export class ApiConfigService {
       type: 'mongodb',
       entities: [UserEntity, Report],
       url: this.configService.get<string>('DATABASE_URL'),
-      name: 'qytetaret',
+      name: process.env.DB_DATABASE,
       useNewUrlParser: true,
       useUnifiedTopology: true,
       synchronize: this.isDevelopment

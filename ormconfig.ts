@@ -20,7 +20,7 @@ export const dataSource = new DataSource({
   database: process.env.DB_DATABASE,
   url: process.env.DATABASE_URL,
   useNewUrlParser: true,
-  name: 'qytetaret',
+  name: process.env.DB_DATABASE,
   useUnifiedTopology: true,
   synchronize: true, // be careful with this in production
   logging: true,
