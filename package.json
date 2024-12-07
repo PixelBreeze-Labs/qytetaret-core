@@ -7,7 +7,7 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "build:prod": "nest build -p tsconfig.build.json",
+    "build:prod": "./node_modules/.bin/nest build -p tsconfig.build.json",
     "start:dev": "node --loader ts-node/esm src/main.ts",
     "start:nest": "nest start ./src/main.ts",
     "start:prod": "node dist/main.js",
