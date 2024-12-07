@@ -81,7 +81,7 @@
     "@eslint/eslintrc": "^3.1.0",
     "@eslint/js": "^9.14.0",
     "@handfish/hygen": "^6.1.6",
-    "@nestjs/cli": "^10.4.5",
+    "@nestjs/cli": "^10.4.8",
     "@nestjs/testing": "^10.4.6",
     "@stylistic/eslint-plugin-ts": "^2.10.1",
     "@swc/cli": "^0.5.0",
