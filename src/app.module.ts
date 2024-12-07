@@ -16,7 +16,7 @@ import {
   QueryResolver,
 } from 'nestjs-i18n';
 import { DataSource } from 'typeorm';
-import { addTransactionalDataSource } from 'typeorm-transactional';
+import { addTransactionalDataSource, initializeTransactionalContext } from 'typeorm-transactional';
 
 import { AuthModule } from './modules/auth/auth.module.ts';
 import { HealthCheckerModule } from './modules/health-checker/health-checker.module.ts';
@@ -51,21 +51,20 @@ import { ReportModule } from './modules/report/report.module.ts';
     }),
     TypeOrmModule.forRootAsync({
         imports: [SharedModule],
-        useFactory: (configService: ApiConfigService) => ({
-          ...configService.mongoConfig,
-          name: 'qytetaret', // Make sure this matches your config
-        }),
+        useFactory: (configService: ApiConfigService) => configService.mongoConfig,
         inject: [ApiConfigService],
-        dataSourceFactory: (options) => {
+        async dataSourceFactory(options) {
           if (!options) {
             throw new Error('Invalid options passed');
           }
-          return Promise.resolve(
-            addTransactionalDataSource(new DataSource({
-              ...options,
-              name: 'qytetaret' // Add this to ensure consistency
-            })),
-          );
+          // Initialize transactional context
+          initializeTransactionalContext();
+          
+          const dataSource = new DataSource(options);
+          const initializedDataSource = await dataSource.initialize();
+          
+          // Add transactional data source
+          return addTransactionalDataSource(initializedDataSource);
         },
       }),
     I18nModule.forRootAsync({

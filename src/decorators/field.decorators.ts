@@ -1,7 +1,7 @@
 import { applyDecorators } from '@nestjs/common';
 import type { ApiPropertyOptions } from '@nestjs/swagger';
 import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   ArrayMaxSize,
   ArrayMinSize,
@@ -12,6 +12,7 @@ import {
   IsEnum,
   IsInt,
   IsNumber,
+  IsOptional,
   IsPositive,
   IsString,
   IsUrl,
@@ -41,6 +42,7 @@ import {
   IsTmpKey as IsTemporaryKey,
   IsUndefinable,
 } from './validator.decorators.ts';
+import { parsePhoneNumberWithError } from 'libphonenumber-js';
 
 type RequireField<T, K extends keyof T> = T & Required<Pick<T, K>>;
 
@@ -426,14 +428,29 @@ export function PhoneField(
   return applyDecorators(...decorators);
 }
 
-export function PhoneFieldOptional(
-  options: Omit<ApiPropertyOptions, 'type' | 'required'> & IFieldOptions = {},
-): PropertyDecorator {
-  return applyDecorators(
-    IsUndefinable(),
-    PhoneField({ required: false, ...options }),
-  );
-}
+// decorators/field.decorators.ts
+export function PhoneFieldOptional() {
+    return applyDecorators(
+      IsOptional(),
+      Transform(({ value }) => {
+        // Handle null/undefined case
+        if (!value) {
+          return undefined;
+        }
+        // Make sure value is string
+        if (typeof value !== 'string') {
+          return undefined;
+        }
+        try {
+          const phoneNumber = parsePhoneNumberWithError(value);
+          return phoneNumber.format('E.164'); // Returns formatted phone number
+        } catch (error) {
+          return undefined; // Return undefined if parsing fails
+        }
+      }),
+      IsPhoneNumber() // Add validation
+    );
+  }
 
 export function UUIDField(
   options: Omit<ApiPropertyOptions, 'type' | 'format' | 'isArray'> &

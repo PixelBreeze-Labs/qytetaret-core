@@ -4,6 +4,9 @@ import dotenv from 'dotenv';
 import { DataSource } from 'typeorm';
 
 import { UserSubscriber } from './src/entity-subscribers/user-subscriber';
+import { UserEntity } from './src/modules/user/user.entity'; // Add this import
+import { Report } from './src/modules/report/entities/report.entity';
+
 import { SnakeNamingStrategy } from './src/snake-naming.strategy';
 
 dotenv.config();
@@ -17,13 +20,11 @@ export const dataSource = new DataSource({
   database: process.env.DB_DATABASE,
   url: process.env.DATABASE_URL,
   useNewUrlParser: true,
+  name: 'qytetaret',
   useUnifiedTopology: true,
   synchronize: true, // be careful with this in production
   logging: true,
   subscribers: [UserSubscriber],
-  entities: [
-    'src/modules/**/*.entity{.ts,.js}',
-    'src/modules/**/*.view-entity{.ts,.js}',
-  ],
+  entities: [UserEntity, Report],
   migrations: ['src/database/migrations/*{.ts,.js}'],
 });

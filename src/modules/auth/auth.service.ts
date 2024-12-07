@@ -19,9 +19,35 @@ export class AuthService {
     private userService: UserService,
   ) {}
 
+  async validateUser(userLoginDto: UserLoginDto): Promise<UserEntity> {
+    const user = await this.userService.findOne({
+      email: userLoginDto.email,
+    });
+
+    if (!user) {
+      throw new UserNotFoundException();
+    }
+
+    // Make sure password exists before validating
+    if (!user.password || typeof user.password !== 'string') {
+      throw new UserNotFoundException();
+    }
+
+    const isPasswordValid = await validateHash(
+      userLoginDto.password,
+      user.password
+    );
+
+    if (!isPasswordValid) {
+      throw new UserNotFoundException();
+    }
+
+    return user;
+  }
+
   async createAccessToken(data: {
     role: RoleType;
-    userId: Uuid;
+    userId: string; // Changed from Uuid to string since we're using MongoDB
   }): Promise<TokenPayloadDto> {
     return new TokenPayloadDto({
       expiresIn: this.configService.authConfig.jwtExpirationTime,
@@ -31,22 +57,5 @@ export class AuthService {
         role: data.role,
       }),
     });
-  }
-
-  async validateUser(userLoginDto: UserLoginDto): Promise<UserEntity> {
-    const user = await this.userService.findOne({
-      email: userLoginDto.email,
-    });
-
-    const isPasswordValid = await validateHash(
-      userLoginDto.password,
-      user?.password,
-    );
-
-    if (!isPasswordValid) {
-      throw new UserNotFoundException();
-    }
-
-    return user!;
   }
 }

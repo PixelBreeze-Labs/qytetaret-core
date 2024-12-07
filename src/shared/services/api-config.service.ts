@@ -7,6 +7,9 @@ import type { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { default as parse } from 'parse-duration';
 
 import { UserSubscriber } from '../../entity-subscribers/user-subscriber.ts';
+import { UserEntity } from '../../modules/user/user.entity';
+import { Report } from '../../modules/report/entities/report.entity.ts';
+
 
 @Injectable()
 export class ApiConfigService {
@@ -48,6 +51,10 @@ export class ApiConfigService {
     return duration;
   }
 
+  getDatabaseUrl(): string {
+    return this.getString('DATABASE_URL');
+  }
+
   private getBoolean(key: string): boolean {
     const value = this.get(key);
 
@@ -58,7 +65,7 @@ export class ApiConfigService {
     }
   }
 
-  private getString(key: string): string {
+  public getString(key: string): string {
     const value = this.get(key);
 
     return value.replaceAll('\\n', '\n');
@@ -83,8 +90,8 @@ export class ApiConfigService {
 
   get mongoConfig(): TypeOrmModuleOptions {
     const entities = [
-      join(import.meta.dirname + '/modules/**/*.entity{.ts,.js}'),
-      join(import.meta.dirname + '/modules/**/*.view-entity{.ts,.js}'),
+     UserEntity,
+     Report
     ];
     const migrations = [
       join(import.meta.dirname + '/database/migrations/*{.ts,.js}'),
@@ -98,7 +105,7 @@ export class ApiConfigService {
       type: 'mongodb',
       url: this.configService.get<string>('DATABASE_URL'),
       database: this.getString('DB_DATABASE'),
-    //   name: 'qytetaret',
+      name: 'qytetaret',
     //   host: this.getString('DB_HOST'),
     //   port: this.getNumber('DB_PORT'),
     //   username: this.getString('DB_USERNAME'),

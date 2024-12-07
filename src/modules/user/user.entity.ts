@@ -1,46 +1,53 @@
-import { Column, Entity, OneToMany, OneToOne, VirtualColumn } from 'typeorm';
+// user.entity.ts
+import { Entity, Column, ObjectIdColumn, ObjectId } from 'typeorm';
 
-import { AbstractEntity } from '../../common/abstract.entity.ts';
-import { RoleType } from '../../constants/role-type.ts';
-import { UseDto } from '../../decorators/use-dto.decorator.ts';
-import { PostEntity } from '../post/post.entity.ts';
-import type { UserDtoOptions } from './dtos/user.dto.ts';
-import { UserDto } from './dtos/user.dto.ts';
-import { UserSettingsEntity } from './user-settings.entity.ts';
+@Entity('users')
+export class UserEntity {
+  @ObjectIdColumn()
+  _id!: ObjectId;
 
-@Entity({ name: 'users' })
-@UseDto(UserDto)
-export class UserEntity extends AbstractEntity<UserDto, UserDtoOptions> {
-  @Column({ nullable: true, type: 'varchar' })
-  firstName!: string | null;
+  @Column()
+  firstName!: string;
 
-  @Column({ nullable: true, type: 'varchar' })
-  lastName!: string | null;
+  @Column()
+  lastName!: string;
 
-  @Column({ type: 'enum', enum: RoleType, default: RoleType.USER })
-  role!: RoleType;
+  @Column()
+  email!: string;
 
-  @Column({ unique: true, nullable: true, type: 'varchar' })
-  email!: string | null;
+  @Column()
+  password!: string;
 
-  @Column({ nullable: true, type: 'varchar' })
-  password!: string | null;
+  @Column({ nullable: true })
+  phone?: string;
 
-  @Column({ nullable: true, type: 'varchar' })
-  phone!: string | null;
+  @Column({ default: 'user' })
+  role!: string;
 
-  @Column({ nullable: true, type: 'varchar' })
-  avatar!: string | null;
+  @Column({ default: false })
+  isEmailVerified!: boolean;
 
-  @VirtualColumn({
-    query: (alias) =>
-      `SELECT CONCAT(${alias}.first_name, ' ', ${alias}.last_name)`,
-  })
-  fullName!: string;
+  @Column()
+  createdAt!: Date;
 
-  @OneToOne(() => UserSettingsEntity, (userSettings) => userSettings.user)
-  settings?: UserSettingsEntity;
+  @Column()
+  updatedAt!: Date;
 
-  @OneToMany(() => PostEntity, (postEntity) => postEntity.user)
-  posts?: PostEntity[];
+  @Column({ nullable: true })
+  avatar?: string;
+
+  toDto() {
+    return {
+      id: this._id.toString(),
+      firstName: this.firstName,
+      lastName: this.lastName,
+      email: this.email,
+      phone: this.phone,
+      role: this.role,
+      isEmailVerified: this.isEmailVerified,
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt,
+      avatar: this.avatar
+    };
+  }
 }
