@@ -1,6 +1,5 @@
-// src/modules/report/dtos/create-report.dto.ts
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, IsArray, IsOptional } from 'class-validator';
+import { IsNotEmpty, IsString, IsArray, IsOptional, IsBoolean } from 'class-validator';
 
 export class CreateReportDto {
   @ApiProperty()
@@ -11,14 +10,7 @@ export class CreateReportDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  description!: string;
-
-  @ApiProperty()
-  @IsNotEmpty()
-  location!: {
-    type: string;
-    coordinates: [number, number];
-  };
+  content!: string;
 
   @ApiProperty()
   @IsNotEmpty()
@@ -27,6 +19,22 @@ export class CreateReportDto {
 
   @ApiProperty()
   @IsOptional()
+  @IsBoolean()
+  isAnonymous?: boolean;
+
+  @ApiProperty()
+  location: {
+    lat: number;
+    lng: number;
+    accuracy?: number;
+  } = { lat: 0, lng: 0 };
+
+  @ApiProperty()
+  @IsOptional()
   @IsArray()
   media?: string[];
+
+  @ApiProperty()
+  @IsOptional()
+  audio?: string;
 }

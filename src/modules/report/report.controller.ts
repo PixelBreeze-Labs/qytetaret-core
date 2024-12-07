@@ -7,7 +7,9 @@ import {
     Param, 
     Delete, 
     UseGuards,
-    Query 
+    Query,
+    Request,
+    Optional
   } from '@nestjs/common';
   import { 
     ApiTags, 
@@ -30,19 +32,25 @@ import {
   export class ReportController {
     constructor(private readonly reportService: ReportService) {}
   
+  
     @Post()
-    @UseGuards(AuthGuard('jwt'))
-    @ApiBearerAuth()
+    // @UseGuards(AuthGuard('jwt'))
+    @Optional() // Make auth optional
     @ApiOperation({ summary: 'Create a new community report' })
     @ApiResponse({ 
       status: 201, 
       description: 'Report has been successfully created',
       type: Report 
     })
-    @ApiResponse({ status: 401, description: 'Unauthorized - Valid JWT token required' })
     @ApiResponse({ status: 400, description: 'Bad Request - Invalid input data' })
-    create(@Body() createReportDto: CreateReportDto): Promise<Report> {
-      return this.reportService.create(createReportDto, 'user-id');
+    async create(
+      // @ts-ignore
+      @Request() req,
+      @Body() createReportDto: CreateReportDto
+    ): Promise<Report> {
+      // User might be undefined for anonymous reports
+      const authorId = req.user?.id;
+      return this.reportService.create(createReportDto, authorId);
     }
   
     @Get()
@@ -54,6 +62,28 @@ import {
     })
     findAll(): Promise<Report[]> {
       return this.reportService.findAll();
+    }
+  
+    @Get('featured')
+    @ApiOperation({ summary: 'Get featured community reports' })
+    @ApiResponse({
+      status: 200,
+      description: 'Returns array of featured reports',
+      type: [Report]
+    })
+    getFeaturedReports(): Promise<Report[]> {
+      return this.reportService.getFeaturedReports();
+    }
+  
+    @Get('map')
+    @ApiOperation({ summary: 'Get reports for map view' })
+    @ApiResponse({
+      status: 200,
+      description: 'Returns array of reports for map display',
+      type: [Report]
+    })
+    getMapReports(): Promise<Report[]> {
+      return this.reportService.getMapReports();
     }
   
     @Get('nearby')

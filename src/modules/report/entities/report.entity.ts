@@ -1,4 +1,3 @@
-// src/modules/report/entities/report.entity.ts
 import { Column, Entity, ObjectIdColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -14,18 +13,23 @@ export class Report {
 
   @ApiProperty()
   @Column()
-  description: string;
-
-  @ApiProperty()
-  @Column()
-  location: {
-    type: string;
-    coordinates: [number, number];
-  };
+  content: string;
 
   @ApiProperty()
   @Column()
   category: string;
+
+  @ApiProperty()
+  @Column()
+  isAnonymous: boolean;
+
+  @ApiProperty()
+  @Column()
+  location: {
+    lat: number;
+    lng: number;
+    accuracy?: number;
+  };
 
   @ApiProperty()
   @Column()
@@ -40,6 +44,10 @@ export class Report {
   media: string[];
 
   @ApiProperty()
+  @Column()
+  audio?: string;
+
+  @ApiProperty()
   @Column({ type: 'timestamp' })
   createdAt: Date;
 
@@ -50,9 +58,10 @@ export class Report {
   constructor() {
     this.id = '';
     this.title = '';
-    this.description = '';
-    this.location = { type: 'Point', coordinates: [0, 0] };
+    this.content = '';
     this.category = '';
+    this.isAnonymous = false;
+    this.location = { lat: 0, lng: 0 };
     this.status = 'pending';
     this.authorId = '';
     this.media = [];

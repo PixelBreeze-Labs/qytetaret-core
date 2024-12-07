@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { MongoRepository } from 'typeorm';  // Change to MongoRepository
+import { MongoRepository } from 'typeorm';
 import { Report } from './entities/report.entity';
 import { CreateReportDto } from './dtos/create-report.dto';
 import { UpdateReportDto } from './dtos/update-report.dto';
@@ -9,10 +9,11 @@ import { UpdateReportDto } from './dtos/update-report.dto';
 export class ReportService {
   constructor(
     @InjectRepository(Report)
-    private reportRepository: MongoRepository<Report>,  // Change to MongoRepository
+    private reportRepository: MongoRepository<Report>,
   ) {}
 
   async create(createReportDto: CreateReportDto, authorId: string): Promise<Report> {
+    // Handle file uploads (you'll need to implement file storage logic)
     const report = this.reportRepository.create({
       ...createReportDto,
       authorId,
@@ -24,7 +25,9 @@ export class ReportService {
   }
 
   async findAll(): Promise<Report[]> {
-    return this.reportRepository.find();
+    return this.reportRepository.find({
+      order: { createdAt: 'DESC' }
+    });
   }
 
   async findOne(id: string): Promise<Report> {
@@ -33,6 +36,21 @@ export class ReportService {
       throw new NotFoundException(`Report with ID ${id} not found`);
     }
     return report;
+  }
+
+  async getFeaturedReports(): Promise<Report[]> {
+    // Implement logic to fetch featured reports
+    // For now, just return the 5 most recent reports
+    return this.reportRepository.find({
+      order: { createdAt: 'DESC' },
+      take: 5
+    });
+  }
+
+  async getMapReports(): Promise<Report[]> {
+    // Implement logic to fetch reports for map view
+    // You might want to add additional filtering or sorting
+    return this.reportRepository.find();
   }
 
   async update(id: string, updateReportDto: UpdateReportDto): Promise<Report> {
@@ -52,15 +70,14 @@ export class ReportService {
   }
 
   async findNearby(lat: number, lng: number, maxDistance: number = 5000): Promise<Report[]> {
-    // Using MongoDB's native query capabilities through TypeORM
     return this.reportRepository.find({
       where: {
         location: {
           $geoWithin: {
-            $centerSphere: [[lng, lat], maxDistance / 6378100]  // Convert meters to radians
+            $centerSphere: [[lng, lat], maxDistance / 6378100]
           }
         }
-      } as any  // Type assertion to bypass TypeORM's type checking
+      } as any
     });
   }
 }
