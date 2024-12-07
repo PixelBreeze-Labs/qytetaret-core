@@ -15,6 +15,7 @@ export const dataSource = new DataSource({
   username: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_DATABASE,
+  url: process.env.DATABASE_URL,
   useNewUrlParser: true,
   useUnifiedTopology: true,
   synchronize: true, // be careful with this in production
