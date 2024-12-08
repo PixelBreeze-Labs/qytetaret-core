@@ -1,11 +1,12 @@
 import { Column, Entity, ObjectIdColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
+import { ObjectId } from 'mongodb';
 
 @Entity('reports')
 export class Report {
   @ApiProperty()
   @ObjectIdColumn()
-  id: string;
+  _id: ObjectId;
 
   @ApiProperty()
   @Column()
@@ -56,7 +57,7 @@ export class Report {
   updatedAt: Date;
 
   constructor() {
-    this.id = '';
+    this._id = new ObjectId();
     this.title = '';
     this.content = '';
     this.category = '';
