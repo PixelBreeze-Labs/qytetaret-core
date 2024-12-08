@@ -103,19 +103,19 @@ import {
       description: 'Returns array of featured reports',
       type: [Report]
     })
-    getFeaturedReports(): Promise<Report[]> {
+    getFeaturedReports(): Promise<{ data: Report[] }> {
       return this.reportService.getFeaturedReports();
     }
   
     @Get('map')
     @ApiOperation({ summary: 'Get reports for map view' })
     @ApiResponse({
-      status: 200,
-      description: 'Returns array of reports for map display',
-      type: [Report]
+        status: 200,
+        description: 'Returns array of reports for map display',
+        type: Report
     })
-    getMapReports(): Promise<Report[]> {
-      return this.reportService.getMapReports();
+    getMapReports(): Promise<{ data: Report[] }> {
+        return this.reportService.getMapReports();
     }
   
     @Get('nearby')

@@ -164,17 +164,41 @@ export class ReportService {
       return transformedReport;
     });
   
+    
     return {
+      // @ts-ignore
       data: allFeatured
     };
   }
 
 
-  async getMapReports(): Promise<Report[]> {
-    // Implement logic to fetch reports for map view
-    // You might want to add additional filtering or sorting
-    return this.reportRepository.find();
-  }
+  async getMapReports(): Promise<{ data: Report[] }> {
+    // Merr të gjitha reports
+    const reports = await this.reportRepository.find();
+    
+    // Transform reports
+    const transformedReports = reports.map(report => {
+        const fixedMedia = report.media?.map(url => {
+            if (typeof url === 'string' && url.startsWith('https://https://')) {
+                return url.replace('https://https://', 'https://');
+            }
+            return url;
+        });
+
+        return {
+            ...report,
+            id: report._id.toString(),
+            media: fixedMedia,
+            _id: undefined
+        };
+    });
+
+
+    return {
+         // @ts-ignore
+        data: transformedReports
+    };
+}
 
   async update(id: string, updateReportDto: UpdateReportDto): Promise<Report> {
     const report = await this.findOne(id);
