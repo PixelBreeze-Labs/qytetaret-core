@@ -47,7 +47,7 @@ export class CreateReportDto {
   @ApiProperty()
   @IsOptional()
   @IsArray()
-  media?: string[];
+  media?: any;
 
   @ApiProperty()
   @IsOptional()

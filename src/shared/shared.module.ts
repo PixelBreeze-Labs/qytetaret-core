@@ -7,11 +7,13 @@ import { AwsS3Service } from './services/aws-s3.service.ts';
 import { GeneratorService } from './services/generator.service.ts';
 import { TranslationService } from './services/translation.service.ts';
 import { ValidatorService } from './services/validator.service.ts';
+import { SupabaseService } from './services/supabase.service.ts';
 
 const providers: Provider[] = [
   ApiConfigService,
   ValidatorService,
   AwsS3Service,
+  SupabaseService,
   GeneratorService,
   TranslationService,
 ];

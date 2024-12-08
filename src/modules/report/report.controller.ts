@@ -9,7 +9,9 @@ import {
     UseGuards,
     Query,
     Request,
-    Optional
+    Optional,
+    UploadedFiles,
+    UseInterceptors
   } from '@nestjs/common';
   import { 
     ApiTags, 
@@ -18,13 +20,15 @@ import {
     ApiResponse, 
     ApiParam, 
     ApiQuery, 
-    ApiExtraModels 
+    ApiExtraModels, 
+    ApiConsumes
   } from '@nestjs/swagger';
   import { AuthGuard } from '@nestjs/passport';
   import { ReportService } from './report.service';
   import { CreateReportDto } from './dtos/create-report.dto';
   import { UpdateReportDto } from './dtos/update-report.dto';
   import { Report } from './entities/report.entity';
+  import { FilesInterceptor } from '@nestjs/platform-express';
   
   @ApiTags('reports')
   @Controller('reports')
@@ -34,6 +38,8 @@ import {
   
   
     @Post()
+    @ApiConsumes('multipart/form-data')
+    @UseInterceptors(FilesInterceptor('media', 10))
     // @UseGuards(AuthGuard('jwt'))
     @Optional() // Make auth optional
     @ApiOperation({ summary: 'Create a new community report' })
@@ -44,14 +50,20 @@ import {
     })
     @ApiResponse({ status: 400, description: 'Bad Request - Invalid input data' })
     async create(
-      // @ts-ignore
-      @Request() req,
-      @Body() createReportDto: CreateReportDto
-    ): Promise<Report> {
-      // User might be undefined for anonymous reports
-      const authorId = req.user?.id;
-      return this.reportService.create(createReportDto, authorId);
-    }
+        @UploadedFiles() files: Express.Multer.File[],
+        @Body() createReportDto: CreateReportDto
+      ): Promise<Report> {
+        // Parse location from string to object if it's a string
+        if (typeof createReportDto.location === 'string') {
+          try {
+            createReportDto.location = JSON.parse(createReportDto.location);
+          } catch (error) {
+            throw new Error('Invalid location format');
+          }
+        }
+    
+        return this.reportService.create(createReportDto, files);
+      }
   
     @Get()
     @ApiOperation({ summary: 'Get all community reports' })

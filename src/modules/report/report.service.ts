@@ -4,26 +4,55 @@ import { MongoRepository } from 'typeorm';
 import { Report } from './entities/report.entity';
 import { CreateReportDto } from './dtos/create-report.dto';
 import { UpdateReportDto } from './dtos/update-report.dto';
+import { SupabaseService } from '../../shared/services/supabase.service';
 
 @Injectable()
 export class ReportService {
-  constructor(
-    @InjectRepository(Report)
-    private reportRepository: MongoRepository<Report>,
-  ) {}
+    constructor(
+        @InjectRepository(Report)
+        private reportRepository: MongoRepository<Report>,
+        private supabase: SupabaseService
+    ) {}
 
-  async create(createReportDto: CreateReportDto, authorId: string): Promise<Report> {
-    // Handle file uploads (you'll need to implement file storage logic)
-    const report = this.reportRepository.create({
-      ...createReportDto,
-      authorId,
-      status: 'pending',
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
-    return this.reportRepository.save(report);
-  }
-
+    async create(createReportDto: CreateReportDto, files: Express.Multer.File[] = []): Promise<Report> {
+        const mediaUrls: string[] = [];
+    
+        // Upload images to Supabase
+        if (files && files.length > 0) {
+          for (const file of files) {
+            const filename = `${Date.now()}-${file.originalname}`;
+            const url = await this.supabase.uploadImage(file.buffer, filename);
+            mediaUrls.push(url);
+          }
+        }
+    
+        // Handle base64 audio
+        let audioUrl: string | null = null;
+        if (createReportDto.audio) {
+          try {
+            // @ts-ignore
+            const audioBuffer = Buffer.from(createReportDto.audio.split(',')[1], 'base64');
+            const audioFilename = `audio-${Date.now()}.webm`;
+            audioUrl = await this.supabase.uploadAudio(audioBuffer, audioFilename);
+          } catch (error) {
+            console.error('Audio upload failed', error);
+          }
+        }
+    
+        // Create the report object
+        // @ts-ignore
+        const report = this.reportRepository.create({
+          ...createReportDto,
+          media: mediaUrls.length > 0 ? mediaUrls : undefined,
+          audio: audioUrl,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        });
+        // @ts-ignore
+    
+        return this.reportRepository.save(report);
+      }
+    
   async findAll(): Promise<Report[]> {
     return this.reportRepository.find({
       order: { createdAt: 'DESC' }
