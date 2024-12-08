@@ -43,13 +43,4 @@ export class CreateReportDto {
   @ValidateNested()
   @Type(() => LocationDto)
   location!: LocationDto;
-
-  @ApiProperty()
-  @IsOptional()
-  @IsArray()
-  media?: any;
-
-  @ApiProperty()
-  @IsOptional()
-  audio?: string;
 }

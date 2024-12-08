@@ -11,7 +11,8 @@ import {
     Request,
     Optional,
     UploadedFiles,
-    UseInterceptors
+    UseInterceptors,
+    UploadedFile
   } from '@nestjs/common';
   import { 
     ApiTags, 
@@ -28,7 +29,7 @@ import {
   import { CreateReportDto } from './dtos/create-report.dto';
   import { UpdateReportDto } from './dtos/update-report.dto';
   import { Report } from './entities/report.entity';
-  import { FilesInterceptor } from '@nestjs/platform-express';
+  import { FileFieldsInterceptor, FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
   
   @ApiTags('reports')
   @Controller('reports')
@@ -39,7 +40,12 @@ import {
   
     @Post()
     @ApiConsumes('multipart/form-data')
-    @UseInterceptors(FilesInterceptor('media', 10))
+    @UseInterceptors(
+        FileFieldsInterceptor([
+          { name: 'media', maxCount: 10 },
+          { name: 'audio', maxCount: 1 }
+        ])
+    )
     // @UseGuards(AuthGuard('jwt'))
     @Optional() // Make auth optional
     @ApiOperation({ summary: 'Create a new community report' })
@@ -50,19 +56,23 @@ import {
     })
     @ApiResponse({ status: 400, description: 'Bad Request - Invalid input data' })
     async create(
-        @UploadedFiles() files: Express.Multer.File[],
-        @Body() createReportDto: CreateReportDto
+        @Body() createReportDto: CreateReportDto,
+        @UploadedFiles() files: { 
+            media?: Express.Multer.File[], 
+            audio?: Express.Multer.File[] 
+        }
       ): Promise<Report> {
         // Parse location from string to object if it's a string
         if (typeof createReportDto.location === 'string') {
-          try {
             createReportDto.location = JSON.parse(createReportDto.location);
-          } catch (error) {
-            throw new Error('Invalid location format');
-          }
         }
     
-        return this.reportService.create(createReportDto, files);
+        return this.reportService.create(
+            createReportDto, 
+            files?.media || [],
+            // @ts-ignore 
+            files?.audio?.[0]
+        );
       }
   
     @Get()

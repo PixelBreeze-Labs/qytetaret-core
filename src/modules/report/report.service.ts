@@ -14,7 +14,7 @@ export class ReportService {
         private supabase: SupabaseService
     ) {}
 
-    async create(createReportDto: CreateReportDto, files: Express.Multer.File[] = []): Promise<Report> {
+    async create(createReportDto: CreateReportDto, files: Express.Multer.File[] = [], file: Express.Multer.File): Promise<Report> {
         const mediaUrls: string[] = [];
     
         // Upload images to Supabase
@@ -26,17 +26,16 @@ export class ReportService {
           }
         }
     
-        // Handle base64 audio
+        // Handle audio upload
         let audioUrl: string | null = null;
-        if (createReportDto.audio) {
-          try {
-            // @ts-ignore
-            const audioBuffer = Buffer.from(createReportDto.audio.split(',')[1], 'base64');
-            const audioFilename = `audio-${Date.now()}.webm`;
-            audioUrl = await this.supabase.uploadAudio(audioBuffer, audioFilename);
-          } catch (error) {
-            console.error('Audio upload failed', error);
-          }
+        if (file && file.buffer) {
+            try {
+                const audioFilename = `audio-${Date.now()}.webm`;
+                audioUrl = await this.supabase.uploadAudio(file.buffer, audioFilename);
+            } catch (error) {
+                console.error('Audio upload failed', error);
+                // Don't return null, continue with report creation
+            }
         }
     
         // Create the report object
