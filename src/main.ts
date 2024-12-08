@@ -55,10 +55,13 @@ export async function bootstrap(): Promise<NestExpressApplication> {
       whitelist: true,
       errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
       transform: true,
+      transformOptions: {
+        enableImplicitConversion: true
+      },
       dismissDefaultMessages: true,
       exceptionFactory: (errors) => new UnprocessableEntityException(errors),
     }),
-  );
+);
 
   const configService = app.select(SharedModule).get(ApiConfigService);
 
