@@ -73,17 +73,29 @@ import {
         );
       }
   
-    @Get()
-    @ApiOperation({ summary: 'Get all community reports' })
-    @ApiResponse({
-      status: 200,
-      description: 'Returns array of all reports',
-      type: [Report]
-    })
-    findAll(): Promise<Report[]> {
-      return this.reportService.findAll();
-    }
-  
+      @Get()
+      @ApiOperation({ summary: 'Get paginated and filtered reports' })
+      @ApiQuery({ name: 'page', required: false, type: Number })
+      @ApiQuery({ name: 'limit', required: false, type: Number })
+      @ApiQuery({ name: 'category', required: false, type: String })
+      @ApiQuery({ name: 'status', required: false, type: String })
+      @ApiQuery({ name: 'sortBy', required: false, type: String })
+      async findAll(
+          @Query('page') page?: number,
+          @Query('limit') limit?: number,
+          @Query('category') category?: string,
+          @Query('status') status?: string,
+          @Query('sortBy') sortBy?: string,
+      ) {
+          return this.reportService.findAll({
+              page,
+              limit,
+              category,
+              status,
+              sortBy
+          });
+      }
+      
     @Get('featured')
     @ApiOperation({ summary: 'Get featured community reports' })
     @ApiResponse({

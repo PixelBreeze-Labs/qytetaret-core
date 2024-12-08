@@ -52,11 +52,78 @@ export class ReportService {
         return this.reportRepository.save(report);
       }
     
-  async findAll(): Promise<Report[]> {
-    return this.reportRepository.find({
-      order: { createdAt: 'DESC' }
-    });
-  }
+      async findAll(options: {
+        page?: number;
+        limit?: number;
+        category?: string;
+        status?: string;
+        sortBy?: string;
+    }) {
+        const {
+            page = 1,
+            limit = 12,
+            category = 'all',
+            status = 'all',
+            sortBy = 'newest'
+        } = options;
+    
+        const query: any = {};
+        
+        if (category !== 'all') {
+            query.category = category;
+        }
+    
+        if (status !== 'all') {
+            query.status = status;
+        }
+    
+        const sort: any = {};
+        if (sortBy === 'newest') {
+            sort.createdAt = -1;
+        } else {
+            sort.createdAt = 1;
+        }
+    
+        const skip = (page - 1) * limit;
+    
+        const [reports, total] = await Promise.all([
+            this.reportRepository.find({
+                where: query,
+                skip: skip,
+                take: limit,
+                order: sort
+            }),
+            this.reportRepository.count(query)
+        ]);
+    
+        // Transform reports to include string ID
+        const transformedReports = reports.map(report => {
+            const fixedMedia = report.media?.map(url => {
+                if (typeof url === 'string' && url.startsWith('https://https://')) {
+                    return url.replace('https://https://', 'https://');
+                }
+                return url;
+            });
+    
+            const plainReport = {
+                ...report,
+                id: report._id.toString(), // Add string ID
+                media: fixedMedia,
+                _id: undefined // Remove the buffer ID
+            };
+            return plainReport;
+        });
+    
+        return {
+            data: transformedReports,
+            meta: {
+                total,
+                page,
+                limit,
+                hasMore: total > skip + reports.length
+            }
+        };
+    }
 
   async findOne(id: string): Promise<Report> {
     const report = await this.reportRepository.findOne({ where: { id } });
@@ -66,14 +133,42 @@ export class ReportService {
     return report;
   }
 
-  async getFeaturedReports(): Promise<Report[]> {
-    // Implement logic to fetch featured reports
-    // For now, just return the 5 most recent reports
-    return this.reportRepository.find({
-      order: { createdAt: 'DESC' },
-      take: 5
+  async getFeaturedReports(): Promise<{ data: Report[] }> {
+    // Get all reports
+    const allReports = await this.reportRepository.find();
+    
+    // Shuffle randomly
+    const shuffled = allReports.sort(() => 0.5 - Math.random());
+    
+    // Take first 6 reports
+    const featured = shuffled.slice(0, 6);
+  
+    // Transform reports while maintaining the original Report type
+    const allFeatured = featured.map(report => {
+      // Create a new object that matches the Report type
+      const transformedReport = { 
+        ...report,
+         id: report._id.toString(),
+          _id: undefined 
+        };
+      
+      // Fix media URLs if needed
+      if (transformedReport.media) {
+        transformedReport.media = transformedReport.media.map(url => 
+          typeof url === 'string' && url.startsWith('https://https://') 
+            ? url.replace('https://https://', 'https://') 
+            : url
+        );
+      }
+  
+      return transformedReport;
     });
+  
+    return {
+      data: allFeatured
+    };
   }
+
 
   async getMapReports(): Promise<Report[]> {
     // Implement logic to fetch reports for map view
