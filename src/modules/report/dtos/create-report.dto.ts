@@ -1,5 +1,21 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, IsArray, IsOptional, IsBoolean } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsNotEmpty, IsString, IsArray, IsOptional, IsBoolean, IsNumber, ValidateNested } from 'class-validator';
+
+export class LocationDto {
+    @ApiProperty()
+    @IsNumber()
+    lat!: number;
+
+    @ApiProperty()
+    @IsNumber()
+    lng!: number;
+
+    @ApiProperty()
+    @IsOptional()
+    @IsNumber()
+    accuracy?: number;
+}
 
 export class CreateReportDto {
   @ApiProperty()
@@ -22,12 +38,11 @@ export class CreateReportDto {
   @IsBoolean()
   isAnonymous?: boolean;
 
+ 
   @ApiProperty()
-  location: {
-    lat: number;
-    lng: number;
-    accuracy?: number;
-  } = { lat: 0, lng: 0 };
+  @ValidateNested()
+  @Type(() => LocationDto)
+  location!: LocationDto;
 
   @ApiProperty()
   @IsOptional()
