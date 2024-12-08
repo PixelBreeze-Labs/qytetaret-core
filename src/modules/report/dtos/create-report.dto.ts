@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsNotEmpty, IsString, IsArray, IsOptional, IsBoolean, IsNumber, ValidateNested } from 'class-validator';
+import { IsNotEmpty, IsString, IsOptional, IsBoolean, IsNumber, ValidateNested } from 'class-validator';
 
 export class LocationDto {
     @ApiProperty()

@@ -8,11 +8,9 @@ import {
     Delete, 
     UseGuards,
     Query,
-    Request,
     Optional,
     UploadedFiles,
     UseInterceptors,
-    UploadedFile
   } from '@nestjs/common';
   import { 
     ApiTags, 
@@ -29,7 +27,7 @@ import {
   import { CreateReportDto } from './dtos/create-report.dto';
   import { UpdateReportDto } from './dtos/update-report.dto';
   import { Report } from './entities/report.entity';
-  import { FileFieldsInterceptor, FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+  import { FileFieldsInterceptor } from '@nestjs/platform-express';
   
   @ApiTags('reports')
   @Controller('reports')
