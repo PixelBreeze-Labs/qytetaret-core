@@ -5,6 +5,7 @@ import { Report } from './entities/report.entity';
 import { CreateReportDto } from './dtos/create-report.dto';
 import { UpdateReportDto } from './dtos/update-report.dto';
 import { SupabaseService } from '../../shared/services/supabase.service';
+import { ObjectId } from 'mongodb';
 
 @Injectable()
 export class ReportService {
@@ -125,13 +126,29 @@ export class ReportService {
         };
     }
 
-  async findOne(id: string): Promise<Report> {
-    const report = await this.reportRepository.findOne({ where: { id } });
-    if (!report) {
-      throw new NotFoundException(`Report with ID ${id} not found`);
+    async findOne(id: string): Promise<Report> {
+        const objectId = new ObjectId(id); // Convert to ObjectId
+        const report = await this.reportRepository.findOne({ where: { _id: objectId } });
+        if (!report) {
+            throw new NotFoundException(`Report with ID ${id} not found`);
+        }
+    
+        // Transform report like in other methods
+        const transformedReport = {
+            ...report,
+            id: report._id.toString(),
+            media: report.media?.map(url => {
+                if (typeof url === 'string' && url.startsWith('https://https://')) {
+                    return url.replace('https://https://', 'https://');
+                }
+                return url;
+            }),
+            _id: undefined
+        };
+        
+        // @ts-ignore
+        return transformedReport;
     }
-    return report;
-  }
 
   async getFeaturedReports(): Promise<{ data: Report[] }> {
     // Get all reports
