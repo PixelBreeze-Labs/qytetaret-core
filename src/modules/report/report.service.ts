@@ -126,14 +126,14 @@ export class ReportService {
         };
     }
 
+    // In backend ReportService.findOne
     async findOne(id: string): Promise<Report> {
-        const objectId = new ObjectId(id); // Convert to ObjectId
+        const objectId = new ObjectId(id);
         const report = await this.reportRepository.findOne({ where: { _id: objectId } });
         if (!report) {
             throw new NotFoundException(`Report with ID ${id} not found`);
         }
-    
-        // Transform report like in other methods
+
         const transformedReport = {
             ...report,
             id: report._id.toString(),
@@ -143,9 +143,21 @@ export class ReportService {
                 }
                 return url;
             }),
+            activities: [
+                {
+                    type: 'CREATED',
+                    date: report.createdAt,
+                    status: report.status
+                },
+                ...(report.createdAt.toString() !== report.updatedAt.toString() ? [{
+                    type: 'UPDATED',
+                    date: report.updatedAt,
+                    status: report.status
+                }] : [])
+            ],
             _id: undefined
         };
-        
+
         // @ts-ignore
         return transformedReport;
     }
